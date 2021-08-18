@@ -8,7 +8,7 @@ class VXD:
         root = etree.XML("<VXD></VXD>")
         self.tree = etree.ElementTree(root)
     
-    def set_tags(self, RecordVoxel=1, RecordLink=0, RecordFixedVoxels=1, RecordStepSize=100):
+    def set_history_tags(self, RecordVoxel=1, RecordLink=0, RecordFixedVoxels=1, RecordStepSize=100):
         root = self.tree.getroot()
 
         history = etree.SubElement(root, "RecordHistory")
