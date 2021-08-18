@@ -9,7 +9,8 @@ Does not yet include signaling parameters
 class VXA:
     
     def __init__(self, HeapSize=0.5, EnableCilia=0, DtFrac=0.95, BondDampingZ=1, ColDampingZ=0.8, SlowDampingZ=0.01,
-                EnableCollision=0, SimTime=5, TempPeriod=0, GravEnabled=1, GravAcc=-9.81, FloorEnabled=1, Lattice_Dim=0.01):
+                EnableCollision=0, SimTime=5, TempPeriod=0, GravEnabled=1, GravAcc=-9.81, FloorEnabled=1, Lattice_Dim=0.01,
+                RecordStepSize=100, RecordVoxel=1, RecordLink=0, RecordFixedVoxels=1):
 
         root = etree.XML("<VXA></VXA>")
         root.set('Version', '1.1')
@@ -28,8 +29,12 @@ class VXA:
         self.GravAcc = GravAcc
         self.FloorEnabled = FloorEnabled
         self.Lattice_Dim = Lattice_Dim
+        self.RecordStepSize = RecordStepSize
+        self.RecordVoxel = RecordVoxel
+        self.RecordLink = RecordLink
+        self.RecordFixedVoxels = RecordFixedVoxels
         
-        self.NextMaterialID = 0
+        self.NextMaterialID = 1 # Material ID's start at 1, 0 denotes empty space
 
         self.set_default_tags()
 
@@ -56,6 +61,15 @@ class VXA:
         sub = etree.SubElement(formula, "mtSUB")
         etree.SubElement(sub, "mtVAR").text = 't'
         etree.SubElement(sub, "mtCONST").text = str(self.SimTime)
+
+        fitness = etree.SubElement(simulator, "FitnessFunction") # default - maximum x distance
+        etree.SubElement(fitness, "mtVAR").text = "x"
+
+        history = etree.SubElement(simulator, "RecordHistory")
+        etree.SubElement(history, "RecordStepSize").text = str(self.RecordStepSize) #Capture image every 100 time steps
+        etree.SubElement(history, "RecordVoxel").text = str(self.RecordVoxel) # Add voxels to the visualization
+        etree.SubElement(history, "RecordLink").text = str(self.RecordLink) # Add links to the visualization
+        etree.SubElement(history, "RecordFixedVoxels").text = str(self.RecordFixedVoxels) 
         
         # Environment
 
