@@ -6,4 +6,5 @@ vxa.add_material(RGBA=(255,0,0))
 vxa.write()
 
 vxd = VXD()
+vxd.set_tags()
 vxd.write()

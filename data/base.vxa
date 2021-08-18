@@ -40,8 +40,8 @@
         <Name>0</Name>
         <Display>
           <Red>1.0</Red>
-          <Green>1.0</Green>
-          <Blue>1.0</Blue>
+          <Green>0.0</Green>
+          <Blue>0.0</Blue>
           <Alpha>1.0</Alpha>
         </Display>
         <Mechanical>
