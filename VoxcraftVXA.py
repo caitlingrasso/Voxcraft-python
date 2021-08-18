@@ -1,0 +1,149 @@
+import numpy as np
+from lxml import etree
+import os
+
+'''
+Does not yet include signaling parameters
+'''
+
+class VXA:
+    
+    def __init__(self, HeapSize=0.5, EnableCilia=0, DtFrac=0.95, BondDampingZ=1, ColDampingZ=0.8, SlowDampingZ=0.01,
+                EnableCollision=0, SimTime=5, TempPeriod=0, GravEnabled=1, GravAcc=-9.81, FloorEnabled=1, Lattice_Dim=0.01):
+
+        root = etree.XML("<VXA></VXA>")
+        root.set('Version', '1.1')
+        self.tree = etree.ElementTree(root)
+
+        self.HeapSize = HeapSize
+        self.EnableCilia = EnableCilia
+        self.DtFrac = DtFrac
+        self.BondDampingZ = BondDampingZ
+        self.ColDampingZ = ColDampingZ
+        self.SlowDampingZ = SlowDampingZ
+        self.EnableCollision = EnableCollision
+        self.SimTime = SimTime
+        self.TempPeriod = TempPeriod
+        self.GravEnabled = GravEnabled
+        self.GravAcc = GravAcc
+        self.FloorEnabled = FloorEnabled
+        self.Lattice_Dim = Lattice_Dim
+        
+        self.NextMaterialID = 0
+
+        self.set_default_tags()
+
+    def set_default_tags(self):
+        root = self.tree.getroot()
+        
+        # Simulator
+        simulator = etree.SubElement(root, "Simulator")
+        etree.SubElement(simulator, "EnableCilia").text = str(self.EnableCilia)
+
+        integration = etree.SubElement(simulator, "Integration")
+        etree.SubElement(integration, "DtFrac").text = str(self.DtFrac)
+
+        damping = etree.SubElement(simulator, "Damping")
+        etree.SubElement(damping, "BondDampingZ").text = str(self.BondDampingZ)
+        etree.SubElement(damping, "ColDampingZ").text = str(self.ColDampingZ)
+        etree.SubElement(damping, "SlowDampingZ").text = str(self.SlowDampingZ)
+
+        attachDetach = etree.SubElement(simulator, "AttachDetach")
+        etree.SubElement(attachDetach, "EnableCollision").text = str(self.EnableCollision)
+
+        stopCondition = etree.SubElement(simulator, "StopCondition")
+        formula = etree.SubElement(stopCondition, "StopConditionFormula")
+        sub = etree.SubElement(formula, "mtSUB")
+        etree.SubElement(sub, "mtVAR").text = 't'
+        etree.SubElement(sub, "mtCONST").text = str(self.SimTime)
+        
+        # Environment
+
+        environment = etree.SubElement(root, "Environment")
+        thermal = etree.SubElement(environment, "Thermal")
+        etree.SubElement(thermal, "TempPeriod").text = str(self.TempPeriod)
+
+        gravity = etree.SubElement(environment, "Gravity")
+        etree.SubElement(gravity, "GravEnabled").text = str(self.GravEnabled)
+        etree.SubElement(gravity, "GravAcc").text = str(self.GravAcc)
+        etree.SubElement(gravity, "FloorEnabled").text = str(self.FloorEnabled)
+
+        # VXC tags
+        vxc = etree.SubElement(root, "VXC")
+        vxc.set("Version", "0.94")
+
+        lattice = etree.SubElement(vxc, "Lattice")
+        etree.SubElement(lattice, "Lattice_Dim").text = str(self.Lattice_Dim)
+
+        # Materials
+        palette = etree.SubElement(vxc, "Palette")
+
+        # Structure
+        structure = etree.SubElement(vxc, "Structure")
+        structure.set("Compression", "ASCII_READABLE")
+        # set some default data
+        etree.SubElement(structure, "X_Voxels").text = "1"
+        etree.SubElement(structure, "Y_Voxels").text = "1"
+        etree.SubElement(structure, "Z_Voxels").text = "2"
+
+        data = etree.SubElement(structure, "Data")
+        etree.SubElement(data, "Layer").text = etree.CDATA("0")
+        etree.SubElement(data, "Layer").text = etree.CDATA("1")
+
+    def add_material(self, E=10000, RHO=1000, P=0.35, CTE=0, uStatic=1, uDynamic=0.8,
+                      isSticky=0, hasCilia=0, isBreakable=0, isMeasured=1,
+                      RGBA=None, isFixed=0):
+
+        material_ID = self.NextMaterialID
+        self.NextMaterialID+=1
+
+        if RGBA is None:
+        # assign the material a random color
+            RGBA = np.around((np.random.random(), np.random.random(), np.random.random(), 1), 2)
+        else:
+            if len(RGBA)==3: # if no alpha, add alpha of 255
+                RGBA = (RGBA[0],RGBA[1],RGBA[2],255)
+            
+            # normalize between 0-1
+            RGBA = (RGBA[0]/255,RGBA[1]/255,RGBA[2]/255,RGBA[3]/255)
+
+        palette = self.tree.find("*/Palette")
+        material = etree.SubElement(palette, "Material")
+        
+        etree.SubElement(material, "Name").text = str(material_ID)
+
+        display = etree.SubElement(material, "Display")
+        etree.SubElement(display, "Red").text = str(RGBA[0])
+        etree.SubElement(display, "Green").text = str(RGBA[1])
+        etree.SubElement(display, "Blue").text = str(RGBA[2])
+        etree.SubElement(display, "Alpha").text = str(RGBA[3])
+
+        mechanical = etree.SubElement(material, "Mechanical")
+        etree.SubElement(mechanical, "isMeasured").text = str(isMeasured) # if material should be included in fitness function
+        etree.SubElement(mechanical, "Fixed").text = str(isFixed)
+        etree.SubElement(mechanical, "sticky").text = str(isSticky)
+        etree.SubElement(mechanical, "Cilia").text = str(hasCilia)
+        etree.SubElement(mechanical, "MatModel").text = str(isBreakable) # 0 = no failing
+        etree.SubElement(mechanical, "Elastic_Mod").text = str(E)
+        etree.SubElement(mechanical, "Fail_Stress").text = "0" # no fail if matModel is 0
+        etree.SubElement(mechanical, "Density").text = str(RHO)
+        etree.SubElement(mechanical, "Poissons_Ratio").text = str(P)
+        etree.SubElement(mechanical, "CTE").text = str(CTE)
+        etree.SubElement(mechanical, "uStatic").text = str(uStatic)
+        etree.SubElement(mechanical, "uDynamic").text = str(uDynamic)
+
+        return material_ID
+
+    def write(self, filename='base.vxa'):
+
+        # If no material has been added, add default material
+        if self.NextMaterialID==0:
+            self.add_material()
+
+        os.makedirs('data', exist_ok=True)
+        
+        with open('data/{}'.format(filename), 'w+') as f:
+            f.write(etree.tostring(self.tree, encoding="unicode", pretty_print=True))
+
+    def set_fitness_function(self):
+        pass
