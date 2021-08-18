@@ -1,2 +1,4 @@
 # Voxcraft-python
-Python implementation of https://github.com/jpp46/Voxcraft.jl
+Python interface for [voxcraft-sim](https://github.com/voxcraft/voxcraft-sim)
+
+Based on https://github.com/jpp46/Voxcraft.jl
