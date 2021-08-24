@@ -10,7 +10,8 @@ class VXA:
     
     def __init__(self, HeapSize=0.5, EnableCilia=0, EnableExpansion=0, DtFrac=0.95, BondDampingZ=1, ColDampingZ=0.8, SlowDampingZ=0.01,
                 EnableCollision=0, SimTime=5, TempPeriod=0, GravEnabled=1, GravAcc=-9.81, FloorEnabled=1, Lattice_Dim=0.01,
-                RecordStepSize=100, RecordVoxel=1, RecordLink=0, RecordFixedVoxels=1):
+                RecordStepSize=100, RecordVoxel=1, RecordLink=0, RecordFixedVoxels=1, VaryTempEnabled=0, TempAmplitude=0, TempBase=0,
+                TempEnabled=0):
 
         root = etree.XML("<VXA></VXA>")
         root.set('Version', '1.1')
@@ -34,6 +35,10 @@ class VXA:
         self.RecordVoxel = RecordVoxel
         self.RecordLink = RecordLink
         self.RecordFixedVoxels = RecordFixedVoxels
+        self.VaryTempEnabled = VaryTempEnabled
+        self.TempAmplitude = TempAmplitude
+        self.TempBase = TempBase
+        self.TempEnabled = TempEnabled
         
         self.NextMaterialID = 1 # Material ID's start at 1, 0 denotes empty space
 
@@ -77,7 +82,11 @@ class VXA:
 
         environment = etree.SubElement(root, "Environment")
         thermal = etree.SubElement(environment, "Thermal")
+        etree.SubElement(thermal, "TempEnabled").text = str(self.TempEnabled)
+        etree.SubElement(thermal, "VaryTempEnabled").text = str(self.VaryTempEnabled)
         etree.SubElement(thermal, "TempPeriod").text = str(self.TempPeriod)
+        etree.SubElement(thermal, "TempAmplitude").text = str(self.TempAmplitude)
+        etree.SubElement(thermal, "TempBase").text = str(self.TempBase)
 
         gravity = etree.SubElement(environment, "Gravity")
         etree.SubElement(gravity, "GravEnabled").text = str(self.GravEnabled)
