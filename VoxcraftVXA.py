@@ -117,7 +117,7 @@ class VXA:
 
     def add_material(self, E=10000, RHO=1000, P=0.35, CTE=0, uStatic=1, uDynamic=0.8,
                       isSticky=0, hasCilia=0, isBreakable=0, isMeasured=1,
-                      RGBA=None, isFixed=0):
+                      RGBA=None, isFixed=0, TempPhase=0):
 
         material_ID = self.NextMaterialID
         self.NextMaterialID+=1
@@ -154,6 +154,7 @@ class VXA:
         etree.SubElement(mechanical, "Density").text = str(RHO)
         etree.SubElement(mechanical, "Poissons_Ratio").text = str(P)
         etree.SubElement(mechanical, "CTE").text = str(CTE)
+        etree.SubElement(mechanical, "MaterialTempPhase").text = str(TempPhase)
         etree.SubElement(mechanical, "uStatic").text = str(uStatic)
         etree.SubElement(mechanical, "uDynamic").text = str(uDynamic)
 
