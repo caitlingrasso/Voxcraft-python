@@ -8,7 +8,7 @@ Does not yet include signaling parameters
 
 class VXA:
     
-    def __init__(self, HeapSize=0.5, EnableCilia=0, DtFrac=0.95, BondDampingZ=1, ColDampingZ=0.8, SlowDampingZ=0.01,
+    def __init__(self, HeapSize=0.5, EnableCilia=0, EnableExpansion=0, DtFrac=0.95, BondDampingZ=1, ColDampingZ=0.8, SlowDampingZ=0.01,
                 EnableCollision=0, SimTime=5, TempPeriod=0, GravEnabled=1, GravAcc=-9.81, FloorEnabled=1, Lattice_Dim=0.01,
                 RecordStepSize=100, RecordVoxel=1, RecordLink=0, RecordFixedVoxels=1):
 
@@ -18,6 +18,7 @@ class VXA:
 
         self.HeapSize = HeapSize
         self.EnableCilia = EnableCilia
+        self.EnableExpansion = EnableExpansion
         self.DtFrac = DtFrac
         self.BondDampingZ = BondDampingZ
         self.ColDampingZ = ColDampingZ
@@ -44,6 +45,7 @@ class VXA:
         # Simulator
         simulator = etree.SubElement(root, "Simulator")
         etree.SubElement(simulator, "EnableCilia").text = str(self.EnableCilia)
+        etree.SubElement(simulator, "EnableExpansion").text = str(self.EnableExpansion) # 0 only contraction, 1 is contration + expansion
 
         integration = etree.SubElement(simulator, "Integration")
         etree.SubElement(integration, "DtFrac").text = str(self.DtFrac)
