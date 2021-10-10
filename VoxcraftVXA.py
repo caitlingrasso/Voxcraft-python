@@ -70,7 +70,14 @@ class VXA:
         etree.SubElement(sub, "mtCONST").text = str(self.SimTime)
 
         fitness = etree.SubElement(simulator, "FitnessFunction") # default - maximum x distance
-        etree.SubElement(fitness, "mtVAR").text = "x"
+        add = etree.SubElement(fitness, "mtADD")
+        mul = etree.SubElement(add, 'mtMUL')
+        etree.SubElement(mul, "mtVAR").text = 'x'
+        etree.SubElement(mul, "mtVAR").text = 'x'
+        mul2 = etree.SubElement(add, 'mtMUL')
+        etree.SubElement(mul2, "mtVAR").text = 'y'
+        etree.SubElement(mul2, "mtVAR").text = 'y'
+
 
         history = etree.SubElement(simulator, "RecordHistory")
         etree.SubElement(history, "RecordStepSize").text = str(self.RecordStepSize) #Capture image every 100 time steps
@@ -165,10 +172,8 @@ class VXA:
         # If no material has been added, add default material
         if self.NextMaterialID==0:
             self.add_material()
-
-        os.makedirs('data', exist_ok=True)
         
-        with open('data/{}'.format(filename), 'w+') as f:
+        with open(filename, 'w+') as f:
             f.write(etree.tostring(self.tree, encoding="unicode", pretty_print=True))
 
     def set_fitness_function(self):
