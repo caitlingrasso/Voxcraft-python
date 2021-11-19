@@ -8,8 +8,8 @@ Does not yet include signaling parameters
 
 class VXA:
     
-    def __init__(self, HeapSize=0.1, EnableCilia=0, EnableExpansion=0, DtFrac=0.95, BondDampingZ=1, ColDampingZ=0.8, SlowDampingZ=0.01,
-                EnableCollision=0, SimTime=5, TempPeriod=0, GravEnabled=1, GravAcc=-9.81, FloorEnabled=1, Lattice_Dim=0.01,
+    def __init__(self, HeapSize=0.1, PrintfFIFOSize=50, EnableCilia=0, EnableExpansion=0, DtFrac=0.95, BondDampingZ=1, ColDampingZ=0.8,
+                SlowDampingZ=0.01, EnableCollision=0, SimTime=5, TempPeriod=0, GravEnabled=1, GravAcc=-9.81, FloorEnabled=1, Lattice_Dim=0.01,
                 RecordStepSize=100, RecordVoxel=1, RecordLink=0, RecordFixedVoxels=1, VaryTempEnabled=0, TempAmplitude=0, TempBase=0,
                 TempEnabled=0):
 
@@ -18,6 +18,7 @@ class VXA:
         self.tree = etree.ElementTree(root)
 
         self.HeapSize = HeapSize
+        self.PrintfFIFOSize = PrintfFIFOSize
         self.EnableCilia = EnableCilia
         self.EnableExpansion = EnableExpansion
         self.DtFrac = DtFrac
@@ -50,6 +51,7 @@ class VXA:
         # GPU
         gpu = etree.SubElement(root, 'GPU')
         etree.SubElement(gpu, "HeapSize").text = str(self.HeapSize)
+        etree.SubElement(gpu, "PrintfFIFOSize").text = str(self.PrintfFIFOSize)
         
         # Simulator
         simulator = etree.SubElement(root, "Simulator")
