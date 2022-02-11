@@ -41,7 +41,5 @@ class VXD:
             etree.SubElement(data_tag, "Layer").text = etree.CDATA(string)
 
     def write(self, filename='robot.vxd'):
-        os.makedirs('data', exist_ok=True)
-        
-        with open('data/{}'.format(filename), 'w+') as f:
+        with open(filename, 'w+') as f:
             f.write(etree.tostring(self.tree, encoding="unicode", pretty_print=True))    
