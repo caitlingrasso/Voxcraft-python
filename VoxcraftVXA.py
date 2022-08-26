@@ -126,7 +126,7 @@ class VXA:
         etree.SubElement(data, "Layer").text = etree.CDATA("0")
         etree.SubElement(data, "Layer").text = etree.CDATA("1")
 
-    def add_material(self, E=10000, RHO=1000, P=0.35, CTE=0, uStatic=1, uDynamic=0.8,
+    def add_material(self, E=100000, RHO=1000, P=0.35, CTE=0, uStatic=1, uDynamic=0.8,
                       isSticky=0, hasCilia=0, isBreakable=0, isMeasured=1,
                       RGBA=None, isFixed=0, TempPhase=0):
 
