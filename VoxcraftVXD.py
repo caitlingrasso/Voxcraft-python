@@ -18,7 +18,7 @@ class VXD:
         etree.SubElement(history, "RecordLink").text = str(RecordLink) # Add links to the visualization
         etree.SubElement(history, "RecordFixedVoxels").text = str(RecordFixedVoxels) 
 
-    def set_data(self, data):
+    def set_data(self, data, cilia=None):
         root = self.tree.getroot()
 
         X_Voxels, Y_Voxels, Z_Voxels  = data.shape
@@ -43,6 +43,17 @@ class VXD:
         for i in range(Z_Voxels):
             string = "".join([f"{c}" for c in body_flatten[:,i]])
             etree.SubElement(data_tag, "Layer").text = etree.CDATA(string)
+
+        # set cilia forces
+        BaseCiliaForce = etree.SubElement(structure, "BaseCiliaForce")
+        if cilia is not None:
+            cilia_flatten = np.zeros((X_Voxels*Y_Voxels*3, Z_Voxels))
+            for i in range(Z_Voxels):
+                cilia_flatten[:,i] = cilia[:,:,i,:].flatten()
+
+            for i in range(Z_Voxels):
+                string = ",".join([f"{c}" for c in cilia_flatten[:,i]])
+                etree.SubElement(BaseCiliaForce, "Layer").text = etree.CDATA(string)
 
     def write(self, filename='robot.vxd'):
         with open(filename, 'w+') as f:
