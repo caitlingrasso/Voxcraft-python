@@ -23,8 +23,12 @@ class VXD:
 
         X_Voxels, Y_Voxels, Z_Voxels  = data.shape
         body_flatten = np.zeros((X_Voxels*Y_Voxels, Z_Voxels),dtype=np.int8)
-        for i in range(Z_Voxels):
-            body_flatten[:,i] = data[:,:,i].flatten()
+        for z in range(Z_Voxels):
+            k = 0
+            for y in range(Y_Voxels):
+                for x in range(X_Voxels):
+                    body_flatten[k, z] = data[x, y, z]
+                    k += 1
         
         structure = etree.SubElement(root, "Structure")
         structure.set('replace', 'VXA.VXC.Structure')
@@ -41,7 +45,5 @@ class VXD:
             etree.SubElement(data_tag, "Layer").text = etree.CDATA(string)
 
     def write(self, filename='robot.vxd'):
-        os.makedirs('data', exist_ok=True)
-        
-        with open('data/{}'.format(filename), 'w+') as f:
+        with open(filename, 'w+') as f:
             f.write(etree.tostring(self.tree, encoding="unicode", pretty_print=True))    
