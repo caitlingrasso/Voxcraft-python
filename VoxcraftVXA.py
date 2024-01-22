@@ -37,7 +37,7 @@ class VXA:
         self.RecordLink = RecordLink
         self.RecordFixedVoxels = RecordFixedVoxels
         self.VaryTempEnabled = VaryTempEnabled
-        self.TempAmplitude = TempAmplitude
+        self.TempAmplitude = TempAmplitude # a real # in degress C. Amplitude of temperature oscillation. Larger amplitude -> more actuation.
         self.TempBase = TempBase
         self.TempEnabled = TempEnabled
         
