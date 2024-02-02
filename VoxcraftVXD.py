@@ -60,8 +60,8 @@ class VXD:
             controller = etree.SubElement(root, "Controller")
             etree.SubElement(controller, "Age").text = str(0) # TODO: add as parameter
 
-            string = ",".join([f"{w}" for w in controller_weights]) # weights must be a 1D array 
-            etree.SubElement(controller, "NeuralWeightsX").text = etree.CDATA(string)
+            string = ",".join([f"{w}" for w in controller_weights]) # weights must be a 1D array? 
+            etree.SubElement(controller, "NeuralWeightsX").text = string
 
         # # set body data
         # data_tag = etree.SubElement(structure, "Data")
