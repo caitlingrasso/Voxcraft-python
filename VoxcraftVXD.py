@@ -18,7 +18,7 @@ class VXD:
         etree.SubElement(history, "RecordLink").text = str(RecordLink) # Add links to the visualization
         etree.SubElement(history, "RecordFixedVoxels").text = str(RecordFixedVoxels) 
 
-    def set_data(self, data, cilia=None, controller_age=None, controller_weights=None):
+    def set_data(self, data, cilia=None):
         root = self.tree.getroot()
 
         X_Voxels, Y_Voxels, Z_Voxels  = data.shape
@@ -54,20 +54,6 @@ class VXD:
             for i in range(Z_Voxels):
                 string = ",".join([f"{c}" for c in cilia_flatten[:,i]])
                 etree.SubElement(BaseCiliaForce, "Layer").text = etree.CDATA(string)
-
-        if controller_age is not None and controller_weights is not None:
-            # set distributed neural network weights 
-            controller = etree.SubElement(root, "Controller")
-            etree.SubElement(controller, "Age").text = str(0) # TODO: add as parameter
-
-            string = ",".join([f"{w}" for w in controller_weights]) # weights must be a 1D array? 
-            etree.SubElement(controller, "NeuralWeightsX").text = string
-
-        # # set body data
-        # data_tag = etree.SubElement(structure, "Data")
-        # for i in range(Z_Voxels):
-        #     string = "".join([f"{c}" for c in body_flatten[:,i]])
-        #     etree.SubElement(data_tag, "Layer").text = etree.CDATA(string)
 
     def write(self, filename='robot.vxd'):
         with open(filename, 'w+') as f:
